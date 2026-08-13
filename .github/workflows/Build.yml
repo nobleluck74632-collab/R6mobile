@@ -1,27 +1,42 @@
-name: Makefile CI
+name: Build iOS Tweak
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
+    env:
+      THEOS: /opt/theos
 
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: configure
-      run: ./configure
+      - name: Install dependencies
+        run: |
+          brew install ldid
+          mkdir -p /opt/theos
 
-    - name: Install dependencies
-      run: make
+      - name: Install Theos
+        run: |
+          git clone --recursive https://github.com/theos/theos.git /opt/theos
 
-    - name: Run check
-      run: make check
+      - name: Build Tweak
+        run: |
+          make package FINAL=1 THEOS=/opt/theos
 
-    - name: Run distcheck
-      run: make distcheck
+      - name: Find output files
+        run: |
+          find . -name "*.dylib" -o -name "*.deb" | head -20
+
+      - name: Upload Dylib
+        uses: actions/upload-artifact@v3
+        with:
+          name: R6MobileMod
+          path: |
+            packages/*.dylib
+            packages/*.deb
+            obj/*.dylib
