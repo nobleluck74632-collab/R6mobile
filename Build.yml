@@ -1,0 +1,29 @@
+name: Build iOS Tweak
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Theos
+        run: |
+          brew install ldid dpkg
+          git clone --recursive https://github.com/theos/theos.git $THEOS
+          
+      - name: Build Tweak
+        run: |
+          make package FINAL=1
+          
+      - name: Upload Dylib
+        uses: actions/upload-artifact@v3
+        with:
+          name: R6MobileMod.dylib
+          path: packages/*.dylib
