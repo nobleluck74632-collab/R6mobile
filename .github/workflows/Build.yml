@@ -24,19 +24,15 @@ jobs:
         run: |
           git clone --recursive https://github.com/theos/theos.git /opt/theos
 
-      - name: Build Tweak
+      - name: Build Dylib Only
         run: |
-          make package FINAL=1 THEOS=/opt/theos
-
-      - name: Find output files
-        run: |
-          find . -name "*.dylib" -o -name "*.deb" | head -20
+          export THEOS=/opt/theos
+          make clean
+          make
+          ls -la obj/
 
       - name: Upload Dylib
         uses: actions/upload-artifact@v4
         with:
-          name: R6MobileMod
-          path: |
-            packages/*.dylib
-            packages/*.deb
-            obj/*.dylib
+          name: R6MobileMod.dylib
+          path: obj/*.dylib
