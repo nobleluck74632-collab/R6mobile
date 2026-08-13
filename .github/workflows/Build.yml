@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: macos-latest
     env:
-      THEOS: /opt/theos
+      THEOS: ${{ github.workspace }}/theos
 
     steps:
       - name: Checkout code
@@ -18,8 +18,8 @@ jobs:
       - name: Install Theos and SDKs
         run: |
           brew install ldid
-          git clone --recursive https://github.com/theos/theos.git /opt/theos
-          git clone https://github.com/theos/sdks.git /opt/theos/sdks
+          git clone --recursive https://github.com/theos/theos.git $THEOS
+          git clone https://github.com/theos/sdks.git $THEOS/sdks
 
       - name: Build Tweak
         run: |
