@@ -8,20 +8,21 @@ on:
 jobs:
   build:
     runs-on: macos-latest
+    env:
+      THEOS: /opt/theos
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Theos & SDKs
-        uses: dpogo/theos-action@main
-        with:
-          theos: true
-          sdks: true
+      - name: Install Theos and SDKs
+        run: |
+          brew install ldid
+          git clone --recursive https://github.com/theos/theos.git /opt/theos
+          git clone https://github.com/theos/sdks.git /opt/theos/sdks
 
       - name: Build Tweak
         run: |
-          export THEOS=~/theos
           make clean
           make
           ls -la obj/
